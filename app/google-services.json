@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "714652248339",
+    "firebase_url": "https://get-cabby.firebaseio.com",
+    "project_id": "get-cabby",
+    "storage_bucket": "get-cabby.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714652248339:android:0d9dc60719ed54b2",
+        "android_client_info": {
+          "package_name": "com.example.nikhi.getcabby"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "714652248339-5dd0k4t5ftqcsh2ncjpnj3qp2h30bfor.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nikhi.getcabby",
+            "certificate_hash": "9a39e61b3d4f5a29a7427ba1d0359af64e619fbe"
+          }
+        },
+        {
+          "client_id": "714652248339-nig015bpq59mph2sr0835l2kakm44l9u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjNrmZKIElUXFyfRTJzwtG6i6Djx3esxM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "714652248339-nig015bpq59mph2sr0835l2kakm44l9u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

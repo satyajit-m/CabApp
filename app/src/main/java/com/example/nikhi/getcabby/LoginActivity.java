@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         signUp = findViewById(R.id.loginRegister);
         signUpPhone = findViewById(R.id.loginPhone);
         firebaseAuth = FirebaseAuth.getInstance();
-        HomeActivity = new Intent(getApplicationContext() , HomeActivity.class);
+        HomeActivity = new Intent(getApplicationContext() , MapsActivity.class);
 
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override

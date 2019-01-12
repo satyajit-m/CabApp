@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "714652248339-ua7q04n7s037ej0pa70p0brqlaldmeol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nikhi.getcabby",
+            "certificate_hash": "decf054a7e844b675b5b4be514b55b33a6f787d7"
+          }
+        },
+        {
           "client_id": "714652248339-nig015bpq59mph2sr0835l2kakm44l9u.apps.googleusercontent.com",
           "client_type": 3
         }

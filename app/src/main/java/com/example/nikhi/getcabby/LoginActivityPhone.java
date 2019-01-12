@@ -66,7 +66,7 @@ public class LoginActivityPhone extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Intent intent = new Intent(getApplicationContext() , HomeActivity.class);
+                            Intent intent = new Intent(getApplicationContext() , MapsActivity.class);
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 // The verification code entered was invalid

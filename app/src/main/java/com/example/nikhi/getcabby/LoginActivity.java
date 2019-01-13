@@ -98,36 +98,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
 
                 if(task.isSuccessful()){
-                    loginProgress.setVisibility(View.INVISIBLE);
-                    btnLogin.setVisibility(View.VISIBLE);
-
-                    databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            String user= dataSnapshot.getChildren().toString();
-                            if(user.equalsIgnoreCase("Customer")){
-                                updateUI();
-
-                            }
-                            else  {
-                                Intent intent = new Intent(getApplicationContext(),DriverMap.class);
-                                startActivity(intent);
-                                finish();
-                            }
+//                    loginProgress.setVisibility(View.INVISIBLE);
+//                    btnLogin.setVisibility(View.VISIBLE);
 
 
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
+                    updateUI();
 
                    /* databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -169,9 +144,32 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI() {
 
-        Intent mapActivity = new Intent(getApplicationContext(),MapsActivity.class);
-        startActivity(mapActivity);
-        finish();
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("Type");
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                String type = dataSnapshot.getValue(String.class);
+                if(type.equalsIgnoreCase("Customer")){
+                    startActivity(new Intent(getApplicationContext(),MapsActivity.class));
+
+                }
+                else  {
+                    startActivity(new Intent(getApplicationContext(),DriverMap.class));
+                }
+                finish();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void showMessage(String message) {
@@ -185,11 +183,7 @@ public class LoginActivity extends AppCompatActivity {
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if(user != null){
-            //User is already connected so we need to direct him to the home page
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-            startActivity(intent);
-            finish();
+            updateUI();
         }
 
     }

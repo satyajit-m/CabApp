@@ -138,9 +138,10 @@ public class RegisterActivity extends AppCompatActivity {
                             showMessage("Account Created....Now You Can Sign In");
 
                             String user_id = firebaseAuth.getCurrentUser().getUid();
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(type).child(user_id);
-                           databaseReference.child("Name").setValue(String.valueOf(name));
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
+                            databaseReference.child("Name").setValue(String.valueOf(name));
                             databaseReference.child("Email").setValue(String.valueOf(email));
+                            databaseReference.child("Type").setValue(String.valueOf(type));
                             updateUI();
                             FirebaseAuth.getInstance().signOut();
                             //For updating

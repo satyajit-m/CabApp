@@ -104,8 +104,32 @@ public class LoginActivity extends AppCompatActivity {
                     databaseReference = FirebaseDatabase.getInstance().getReference("Users");
                     String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    databaseReference.addValueEventListener(new ValueEventListener() {
+                            String user= dataSnapshot.getChildren().toString();
+                            if(user.equalsIgnoreCase("Customer")){
+                                updateUI();
+
+                            }
+                            else  {
+                                Intent intent = new Intent(getApplicationContext(),DriverMap.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+                   /* databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String user= dataSnapshot.getChildren().toString();
@@ -127,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         }
-                    });
+                    });*/
 
 
 

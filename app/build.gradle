@@ -19,6 +19,9 @@ android {
 }
 
 dependencies {
+
+    implementation 'com.github.d-max:spots-dialog:0.7@aar'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
@@ -33,6 +36,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.1'
 
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+
+
+    //Geo Fire
+    implementation 'com.firebase:geofire-android:2.3.1'
+
+    //Card View Switch
+    implementation 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
+
+    implementation 'com.android.support:cardview-v7:27.+'
+
+
 
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
     testImplementation 'junit:junit:4.12'

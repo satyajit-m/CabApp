@@ -2,6 +2,7 @@ package com.example.nikhi.getcabby;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import  android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import dmax.dialog.SpotsDialog;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText userMail , userPassword;
@@ -30,14 +33,15 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private String type;
-
+    AlertDialog waitD;
     TextView signUp, signUpPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        waitD = new SpotsDialog(LoginActivity.this);
+        waitD.show();
 
         userMail = findViewById(R.id.loginEmail);
         userPassword = findViewById(R.id.loginPassword);
@@ -160,6 +164,8 @@ public class LoginActivity extends AppCompatActivity {
                 else  {
                     startActivity(new Intent(getApplicationContext(),DriverMap.class));
                 }
+                waitD.dismiss();
+
                 finish();
 
 
@@ -183,7 +189,11 @@ public class LoginActivity extends AppCompatActivity {
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if(user != null){
+
             updateUI();
+        }
+        else {
+            waitD.dismiss();
         }
 
     }

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivityPhone"
+    android:background="#75b3f1">
+
+
+    <View
+        android:id="@+id/viewGap"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"/>
+
+   <EditText
+        android:layout_below="@id/viewGap"
+        android:id="@+id/editTextPhone"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:digits="0123456789"
+        android:ems="10"
+        android:hint="Enter Phone"
+        android:inputType="phone"
+        android:background="@drawable/edittext_style"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/buttonSendCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextPhone"
+        android:layout_centerHorizontal="true"
+        android:text="GET OTP"
+        android:textAlignment="center"
+        android:layout_marginTop="5dp"/>
+
+    <EditText
+        android:id="@+id/editTextOTP"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter OTP"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/buttonSendCode"
+        android:digits="0123456789"
+        android:inputType="number"
+        android:background="@drawable/edittext_style"
+        android:textAlignment="center"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/buttonSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SIGN IN"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/editTextOTP"
+        android:textAlignment="center"
+        android:layout_marginTop="5dp"/>
+
+    <View
+        android:id="@+id/loginPhoneV1"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="#0d2679"
+        android:layout_alignParentBottom="true" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="#430263"
+        android:layout_above="@id/loginPhoneV1"/>
+
+</RelativeLayout>

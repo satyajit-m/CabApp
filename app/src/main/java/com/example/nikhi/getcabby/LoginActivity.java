@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         waitD = new SpotsDialog(LoginActivity.this);
+        waitD.setTitle("Signing You In");
         waitD.show();
 
         userMail = findViewById(R.id.loginEmail);
@@ -164,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
                 else  {
                     startActivity(new Intent(getApplicationContext(),DriverMap.class));
                 }
-                waitD.dismiss();
+               waitD.dismiss();
 
                 finish();
 
@@ -201,6 +202,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+
         finish();
     }
 }

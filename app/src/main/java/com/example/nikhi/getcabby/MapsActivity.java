@@ -38,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -102,7 +103,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(),mLastLocation.getLongitude()));
 
                 pickupLocation= new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(pickupLocation).title("PickUp Point"));
+                mMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_on))
+                        .position(pickupLocation)
+                        .title("Pickup Point"));
                 mRequest.setText("Searching for driver...");
 
                 getClosestDriver();
@@ -186,7 +190,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(mDriverMarker!=null){
                         mDriverMarker.remove();
                     }
-                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("I am your Driver"));
+                    Location loc1=new Location("");
+                    loc1.setLatitude(pickupLocation.latitude);
+                    loc1.setLongitude(pickupLocation.longitude);
+
+                    Location loc2=new Location("");
+                    loc2.setLatitude(driverLatLng.latitude);
+                    loc2.setLongitude(driverLatLng.longitude);
+
+                    float distance=loc1.distanceTo(loc2);
+                    if(distance<100){ mRequest.setText("Driver's Here");
+                    }
+                    else{                    mRequest.setText("Driver Found At : "+String.valueOf(distance));
+                    }
+                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("I am your Driver").icon(BitmapDescriptorFactory.fromResource(R.mipmap.taxi)));
+                    mRequest.setEnabled(false);
+
+
                 }
             }
 

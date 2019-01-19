@@ -25,6 +25,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.LocationCallback;
@@ -51,6 +56,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedInputStream;
 import java.sql.Driver;
 import java.util.ArrayList;
@@ -58,7 +65,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DriverMap extends FragmentActivity implements OnMapReadyCallback {
+public class DriverMap extends FragmentActivity implements OnMapReadyCallback, RoutingListener {
 
     private GoogleMap mMap;
     Location mLastLocation;
@@ -92,12 +99,13 @@ public class DriverMap extends FragmentActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-
+        polylines=new ArrayList<>();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mCustomerDestination =(TextView) findViewById(R.id.customerDestination);
 
 
 
@@ -138,7 +146,7 @@ public class DriverMap extends FragmentActivity implements OnMapReadyCallback {
 
     private void getAssignedCustomer(){
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child(driverId).child("customerRideId");
+        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child(driverId).child("customerRequest").child("customerRideId");
         assignedCustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -146,7 +154,7 @@ public class DriverMap extends FragmentActivity implements OnMapReadyCallback {
                     status = 1;
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickupLocation();
-                    //getAssignedCustomerDestination();
+                    getAssignedCustomerDestination();
                     //etAssignedCustomerInfo();
                 }else{
                     //endRide();
@@ -179,11 +187,51 @@ public class DriverMap extends FragmentActivity implements OnMapReadyCallback {
                     }
                     pickupLatLng = new LatLng(locationLat,locationLng);
                     pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup Location").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_pickup)));
+
+                    getRouteToMarker(pickupLatLng);
+                }
+                else {
+                    erasePolylines();
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void getRouteToMarker(LatLng pickupLatLng) {
+        if(mLastLocation!=null) {
+
+            Routing routing = new Routing.Builder()
+                .key("AIzaSyBU9ZQ_DCQkmcsMHdd5JaYzsdIzCGlWAZI")
+                .travelMode(AbstractRouting.TravelMode.DRIVING)
+                .withListener(this)
+                .alternativeRoutes(false)
+                .waypoints(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), pickupLatLng)
+                .build();
+        routing.execute();}
+    }
+
+    private void getAssignedCustomerDestination(){
+        String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child(driverId).child("customerRequest").child("destination");
+        assignedCustomerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    String destination = dataSnapshot.getValue().toString();
+                    mCustomerDestination.setText("Destination : "+destination);
+
+                }else{
+                    mCustomerDestination.setText("Destination -- Not Entered ");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                mCustomerDestination.clearComposingText();
             }
         });
     }
@@ -308,57 +356,64 @@ public class DriverMap extends FragmentActivity implements OnMapReadyCallback {
     }
 
 
+    private List<Polyline> polylines;
+    private static final int[] COLORS = new int[]{R.color.colorPrimaryDark};
+
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        if(e != null) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+        if(polylines.size()>0) {
+            for (Polyline poly : polylines) {
+                poly.remove();
+            }
+        }
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map.
+        for (int i = 0; i <route.size(); i++) {
+
+            //In case of more than 5 alternative routes
+            int colorIndex = i % COLORS.length;
+
+            PolylineOptions polyOptions = new PolylineOptions();
+            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+            polyOptions.width(10 + i * 3);
+            polyOptions.addAll(route.get(i).getPoints());
+            Polyline polyline = mMap.addPolyline(polyOptions);
+            polylines.add(polyline);
+
+            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": Distance - "+ route.get(i).getDistanceValue()+": Duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
+        }
+
+     private void erasePolylines(){
+        for (Polyline line : polylines){
+            line.remove();
+        }
+        polylines.clear();
+     }
 
 
 
-
-//    private List<Polyline> polylines;
-//    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
-//    @Override
-//    public void onRoutingFailure(RouteException e) {
-//        if(e != null) {
-//            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-//        }else {
-//            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-//    @Override
-//    public void onRoutingStart() {
-//    }
-//    @Override
-//    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
-//        if(polylines.size()>0) {
-//            for (Polyline poly : polylines) {
-//                poly.remove();
-//            }
-//        }
-//
-//        polylines = new ArrayList<>();
-//        //add route(s) to the map.
-//        for (int i = 0; i <route.size(); i++) {
-//
-//            //In case of more than 5 alternative routes
-//            int colorIndex = i % COLORS.length;
-//
-//            PolylineOptions polyOptions = new PolylineOptions();
-//            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
-//            polyOptions.width(10 + i * 3);
-//            polyOptions.addAll(route.get(i).getPoints());
-//            Polyline polyline = mMap.addPolyline(polyOptions);
-//            polylines.add(polyline);
-//
-//            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
-//    @Override
-//    public void onRoutingCancelled() {
-//    }
-//    private void erasePolylines(){
-//        for(Polyline line : polylines){
-//            line.remove();
-//        }
-//        polylines.clear();
-//    }
 
 }

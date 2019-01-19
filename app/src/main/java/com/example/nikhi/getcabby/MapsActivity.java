@@ -33,6 +33,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -62,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button mSignout, mRequest;
     private LatLng pickupLocation;
     private SupportMapFragment mapFragment;
+    private String destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +118,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                destination=place.getName().toString();
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
 
     }
     private int radius =1;
@@ -131,10 +149,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     DriverFound=true;
                     DriverID=key;
 
-                    DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("Users").child(DriverID);
+                    DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("Users").child(DriverID).child("customerRequest");
                     String customerId= FirebaseAuth.getInstance().getCurrentUser().getUid();
                     HashMap map =new HashMap();
                     map.put("customerRideId",customerId);
+                    map.put("destination",destination);
+
                     databaseRef.updateChildren(map);
 
                     getDriverLocation();
